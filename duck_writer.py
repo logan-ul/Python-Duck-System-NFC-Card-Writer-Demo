@@ -15,6 +15,7 @@ from __future__ import annotations
 import json
 import time
 import os
+import duck
 from typing import List, Dict, Any
 
 from smartcard.System import readers
@@ -55,6 +56,14 @@ def load_records_file(path: str) -> List[Dict[str, Any]]:
     return data
 
 
+def choose_duck_record() -> dict | Any:
+    manager = duck.DuckManager()
+    for i, d in enumerate(manager.data):
+        print(i, json.dumps(d, indent=2))
+    idx = int(input("Enter the number for the duck you want to work with -> "))
+    return manager.data[idx]
+
+
 def pick_records_file() -> str:
     """
     Simple UX: user types a path.
@@ -91,6 +100,25 @@ def wait_for_tag_on_reader(reader_obj, poll_seconds: float = 0.20):
         time.sleep(poll_seconds)
 
 
+def format_duck_record(duck_record) -> List[Dict[Any, Any]]:
+    """
+    [
+    { "type": "url", "value": "https://ects.example/d/PIXEL" },
+    { "type": "text", "lang": "en", "value": "PIXEL" },
+    { "type": "json", "value": { "duckId": "PIXEL", "v": 1 } }
+    ]
+
+    """
+    data = []
+    data.append(
+        {"type": "url", "value": f"https://duckland-production.up.railway.app/ducks/{duck_record['_id']}"})
+    data.append({"type": "text", "lang": "en", "value": duck_record["_id"]})
+    data.append({"type": "json", "value": {
+                "_id": duck_record["_id"], "assembler": duck_record["assembler"], "duck_name": duck_record["name"]}})
+
+    return data
+
+
 def main():
     rlist = readers()
     if not rlist:
@@ -101,9 +129,12 @@ def main():
     ridx = pick_reader_index(reader_names)
     reader_obj = rlist[ridx]
 
-    records_path = pick_records_file()
-    spec = load_records_file(records_path)
+    duck_record = choose_duck_record()
+    formatted = format_duck_record(duck_record)
 
+    # records_path = pick_records_file()
+    # spec = load_records_file(records_path)
+    spec = formatted
     # Build records + message
     record_bytes_list = build_records_from_spec(spec)
     ndef_message = build_ndef_message(record_bytes_list)
@@ -125,7 +156,7 @@ def main():
         write_ndef_message_to_type2_tag(
             conn, ndef_message, data_area_start_page=4, pad_with_zeros=False)
         print("✅ Write successful.")
-        print(f"Wrote records from: {records_path}")
+        print(f"Wrote records {json.dumps(spec)}")
     except Exception as e:
         print(f"❌ Write failed: {e}")
 
