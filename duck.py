@@ -50,7 +50,7 @@ class Duck:
         # Main fields
         self.id = data["_id"]
         self.name = data["name"]
-        self.assembler = data["assember"]
+        self.assembler = data["assembler"]
         self.adjectives = data["adjectives"]
         self.derpy = data["derpy"]
         self.bio = data["bio"]
@@ -60,10 +60,10 @@ class Duck:
 
         # Body fields
         self.head_color = data["body"]["head"]
-        self.front1_color = data["body"]["front1"]
-        self.front2_color = data["body"]["front2"]
-        self.back1_color = data["body"]["back1"]
-        self.back2_color = data["body"]["back2"]
+        self.front1_color = data["body"]["frontLeft"]
+        self.front2_color = data["body"]["frontRight"]
+        self.back1_color = data["body"]["rearLeft"]
+        self.back2_color = data["body"]["rearRight"]
 
         # Stats fields
         self.strength = data["stats"]["strength"]

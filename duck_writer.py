@@ -111,7 +111,7 @@ def format_duck_record(duck_record) -> List[Dict[Any, Any]]:
     """
     data = []
     data.append(
-        {"type": "url", "value": f"https://duckland-production.up.railway.app/ducks/{duck_record['_id']}"})
+        {"type": "url", "value": f"https://api.ducks.ects-cmp.com/ducks/{duck_record['_id']}"})
     data.append({"type": "text", "lang": "en", "value": duck_record["_id"]})
     data.append({"type": "json", "value": {
                 "_id": duck_record["_id"], "assembler": duck_record["assembler"], "name": duck_record["name"]}})
